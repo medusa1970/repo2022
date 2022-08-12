@@ -1,0 +1,1 @@
+import{Y as e}from"./index.09418d5b.js";import{api as o}from"./axios.5b59bc96.js";const i=e("AuthStore",{state:()=>({user:""}),actions:{async signin(r,s){try{const t=await o.post("api/auth/signin",{username:r,password:s});return this.user=t.data,!0}catch(t){return console.log(t),!1}},async logout(){this.user=""}}});export{i as u};
