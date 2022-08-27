@@ -79,5 +79,6 @@ export const profile = async (req, res) => {
 
 export const uploadFile = async (req, res) => {
     console.log("upload sii-pi");
+    console.log(JSON.stringify(req.body));
     res.json(req.body);
 }
