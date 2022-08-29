@@ -36,17 +36,16 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        unique: true,
         lowercase: true,
         trim: true,
     },
     username: {
         type: String,
-        unique: true,
         trim: true,
     },
     password: {
         type: String,
+        trim: true,
     },
     recovery_code: {
         type: String,
@@ -56,7 +55,7 @@ const userSchema = new Schema({
     state: {
         type: String,
         required: true,
-        enum: ['active', 'inactive', 'pending'],
+        enum: ['active', 'inactive', 'pending', 'blocked', 'deleted'],
         default: 'pending'
     },
     type: {
