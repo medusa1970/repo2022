@@ -5,12 +5,39 @@ import Point from '../../models/points/pointModel.js';
 
 export const users = async (req, res) => {
     try {
-        const users = await User.find({}, {_id: 1, first_name:1, last_name:1, username: 1, type: 1, state: 1});
+        const users = await User.find({}, {_id: 1, first_name:1, last_name:1, doc_id:1, phone:1, address:1, username: 1, email:1, type: 1, state: 1});
         const type_users = await TypeUser.find({}, {_id: 1, name: 1});
         const points = await Point.find({}, {_id: 1, name: 1});
         res.status(200).json({users, type_users, points });
     } catch (error) {
         res.status(500).json(error);
+    }
+}
+
+export const addUserData = async (req, res) => { console.log(req.body);
+    const { first_name, last_name, doc_id, phone, address } = req.body;
+    try {
+        const user = new User({ first_name, last_name, doc_id, phone, address });
+        await user.save();
+        res.status(200).json({ error: null, message: 'Usuario creado con exito', user });  
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al crear usuario' });
+    }
+}
+
+export const putUserData = async (req, res) => {
+    const { _id } = req.params;
+    const { email, username, password } = req.body;
+    //update user
+    try {
+        const user = await User.findById(_id);
+        if (!user) {
+            return res.status(404).json({ error: 404, message: 'Usuario no encontrado' });
+        }
+        await user.updateOne({ email, username, password });
+        res.status(200).json({ error: null, message: 'Usuario actualizado con exito' });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'No se pudo procesar. ERROR' });
     }
 }
 
