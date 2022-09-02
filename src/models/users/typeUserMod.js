@@ -5,14 +5,21 @@ const typeUserSchema = new Schema({
     name: {
         type: String,
         required: true,
-        lowercase: true,
         trim: true
-
+    },
+    abbreviation: {
+        type: String,
+        required: true,
     },
     description: {
         type: String,
         required: true,
         trim: true
+    },
+    state: {
+        type: Boolean,
+        required: true,
+        default: true
     },
 }, {
     timestamps: true,

@@ -2,13 +2,21 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const roleSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
+    //vincular con modelo User
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-    type_user: {
-        type: Number,
-        required: true,
+    area: {
+        type: Schema.Types.ObjectId,
+        ref: 'Role',
+        required: true
+    },
+    position: {
+        type: Schema.Types.ObjectId,
+        ref: 'Position',
+        required: true
     },
     icon: {
         type: String,

@@ -19,7 +19,6 @@ const userSchema = new Schema({
     doc_id: {
         type: String,
         required: true,
-        unique: true,
         lowercase: true,
         trim: true
     },
@@ -38,10 +37,12 @@ const userSchema = new Schema({
         type: String,
         lowercase: true,
         trim: true,
+        default: null
     },
     username: {
         type: String,
         trim: true,
+        default: null
     },
     password: {
         type: String,
@@ -73,7 +74,7 @@ userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         return next();
     }
-    const hashedPassword = await bcryptjs.hash(this.password, 10);
+    const hashedPassword = bcryptjs.hash(this.password, 10);
     this.password = hashedPassword;
     next();
 })
