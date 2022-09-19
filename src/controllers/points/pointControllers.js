@@ -1,27 +1,42 @@
 import Point from '../../models/points/pointModel.js';
 
 
-export const points = async (req, res) => {
-    const points = await Point.find();
-    res.json({points});
+export const pointAll = async (req, res) => {
+    try {
+        const points = await Point.find({state: {$ne: "deleted"}}, {_id: 1, name:1});
+        res.status(200).json({points});
+    } catch (error) {
+        res.status(500).json(error);
+    }
 }
 
-export const addPoint = async (req, res) => {
-    const { name, address, abbreviation, phone, state } = req.body;
-    const newPoint = new Point({ name, abbreviation, address, phone, state });
-    const point = await newPoint.save();
-    res.json(point);
+export const pointAdd = async (req, res) => {
+    try {
+        const point = new Point(req.body);
+        await point.save();
+        res.status(200).json({ error: null, message: 'Punto creado con exito', point });  
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error, message: 'Error al crear punto' });
+    }
 }
 
-export const updatePoint = async (req, res) => {
-    const { name, address, phone, state } = req.body;
-    const { id } = req.params;
-    const point = await Point.findByIdAndUpdate(id, { name, address, phone, state }, { new: true });
-    res.json(point);
+export const pointUpdate = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const point = await Point.findByIdAndUpdate(id, req.body, { new: true });
+        res.status(200).json({ error: null, message: 'Punto actualizado con exito', point });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al actualizar punto' });
+    }
 }
 
-export const deletePoint = async (req, res) => {
-    const { id } = req.params;
-    const point = await Point.findByIdAndDelete(id);
-    res.json(point);
+export const pointDelete = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const point = await Point.findByIdAndUpdate(id, {state: "deleted"}, { new: true });
+        res.status(200).json({ error: null, message: 'Punto eliminado con exito', point });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al eliminar punto' });
+    }
 }

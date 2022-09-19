@@ -2,34 +2,70 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const roleSchema = new Schema({
-    //vincular con modelo User
-    name: {
-        type: String,
-    },
     type: {
-        type: String,
-        required: true,
-        enum: ['user', 'point', 'production', 'admin'],
-        default: 'user'
+        name: {
+            type: String,
+            required: true,
+        },
+        description: {
+            type: String,
+            required: true,
+        },
+        abbreviation: {
+            type: String,
+            required: true,
+        },
+        icon: {
+            type: String,
+            required: true,
+        },
     },
-    icon: {
-        type: String,
-    },
-    access: [{
+    area: [{
         name: {
             type: String,
         },
-        links: [{
+        description: {
+            type: String,
+        },
+        abbreviation: {
+            type: String,
+        },
+        icon: {
+            type: String,
+        },
+        position: [{
             name: {
+                type: String,
+            },
+            description: {
+                type: String,
+            },
+            abbreviation: {
                 type: String,
             },
             icon: {
                 type: String,
-            },        
-            route: {
-                type: String,
             },
         }],
+        access: [{
+            name: {
+                type: String,
+            },
+            description: {
+                type: String,
+            },
+            links: [{
+                name: {
+                    type: String,
+                },
+                icon: {
+                    type: String,
+                },        
+                route: {
+                    type: String,
+                },
+            }],
+        }],    
     }],
 }, {
     timestamps: true,

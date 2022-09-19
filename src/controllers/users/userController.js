@@ -1,7 +1,5 @@
 import User from '../../models/users/userModel.js';
 import Role from '../../models/users/roleMod.js';
-import TypeUser from '../../models/users/typeUserMod.js';
-import Position from '../../models/users/positionMod.js';
 import Point from '../../models/points/pointModel.js';
 import bcryptjs from 'bcryptjs';
 
@@ -9,16 +7,13 @@ import bcryptjs from 'bcryptjs';
 export const users = async (req, res) => {
     try {
         const users = await User.find({state: {$ne: "deleted"}}, {_id: 1, first_name:1, last_name:1, doc_id:1, phone:1, address:1, username: 1, email:1, type: 1, state: 1});
-        const type_users = await TypeUser.find({}, {_id: 1, name: 1});
+        const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
         const points = await Point.find({}, {_id: 1, name: 1});
-        const positions = await Position.find({}, {_id: 1, name: 1});
-        res.status(200).json({users, type_users, points, positions });
+        res.status(200).json({users, roles, points});
     } catch (error) {
         res.status(500).json(error);
     }
 }
-
-//list user where state is distint of deleted
 
 export const addUserData = async (req, res) => {
     try {
@@ -45,55 +40,48 @@ export const putUserData = async (req, res) => {
         res.status(500).json({ error: error, message: 'Error al actualizar usuario' });
     }
 }
-export const addRole = async (req, res) => {
-    const { save_in, position, abbreviation } = req.body;
+
+//Roles de usuario
+export const roleAdd = async (req, res) => {
     try {
-        const role = new Role({position: {name: position, abbreviation: abbreviation}});
+        const role = new Role(req.body);
         await role.save();
-        console.log(role);
-        res.status(200).json({ error: null, message: 'Rol creado con exito', role });  
+        const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
+        res.status(200).json({ error: null, message: 'Rol creado con exito', roles });  
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error, message: 'Error al crear rol' });
     }
 }
 
-
-//tipos de usuarios
-export const typeUser = async (req, res) => {
-    // get type users
-    const typeUsers = await TypeUser.find({}, {_id: 1, label: 1, value: 1});
-    res.json(typeUsers);
-}
-
-export const addTypeUser = async (req, res) => {
-    const { name, description } = req.body;
-    const newTypeUser = new TypeUser({ name, description });
-    const typeUser = await newTypeUser.save();
-    res.json(typeUser);
-}
-
-export const updateTypeUser = async (req, res) => {
-    const { label, value } = req.body;
-    const { id } = req.params;
-    const typeUser = await TypeUser.findByIdAndUpdate(id, { label, value }, { new: true });
-    res.json(typeUser);
-}
-
-export const positionGet = async (req, res) => {
-    const position = await Position.find({}, {_id: 1, name: 1});
-    res.json(position);
-}
-
-export const positionPost = async (req, res) => {
+export const roleAll = async (req, res) => {
     try {
-        const newPosition = new Position(req.body);
-        await newPosition.save();
-        const positions = await Position.find({}, {_id: 1, name: 1}, { new: true });
-        res.status(200).json({ error: null, message: 'Posicion creada con exito', positions });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: error, message: 'Error al crear posicion' });
-        }
+        const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
+        res.status(200).json({roles});
+    } catch (error) {
+        res.status(500).json(error);
+    }
 }
 
+export const roleUpdate = async (req, res) => { console.log(req.body);
+    const { _id } = req.params;
+    try {
+        //add new area in role
+        const role = await Role.findByIdAndUpdate(_id, {$push: {area: req.body.area}}, { new: true });
+        res.status(200).json({ error: null, message: 'Rol actualizado con exito', role });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al actualizar rol' });
+    }
+}
+
+export const roleDelete = async (req, res) => {
+    const { _id } = req.params;
+    console.log(req.body._id);
+    try {
+        //delete area in role $in _id
+        const role = await Role.findByIdAndUpdate(_id, {$pull: {area: {_id: req.body._id}}}, { new: true });
+        res.status(200).json({ error: null, message: 'Rol actualizado con exito', role });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al eliminar rol' });
+    }
+}
