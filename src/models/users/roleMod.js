@@ -58,9 +58,9 @@ const roleSchema = new Schema({
                 name: {
                     type: String,
                 },
-                icon: {
+                description: {
                     type: String,
-                },        
+                },
                 route: {
                     type: String,
                 },
