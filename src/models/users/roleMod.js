@@ -45,6 +45,7 @@ const roleSchema = new Schema({
             },
             icon: {
                 type: String,
+                default: 'groups',
             },
         }],
         access: [{

@@ -85,3 +85,48 @@ export const roleDelete = async (req, res) => {
         res.status(500).json({ error: error, message: 'Error al eliminar rol' });
     }
 }
+
+export const createAreaInRole = async (req, res) => {
+    const { _id } = req.params;
+    try {
+        //add new area in role
+        await Role.findByIdAndUpdate(_id, {$push: {area: req.body}}, { new: true });
+        const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
+        res.status(200).json({ error: null, message: 'Rol actualizado con exito', roles });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al actualizar rol' });
+    }
+}
+export const createPositionAreaInRole = async (req, res) => {
+    const { idType, idArea } = req.params;
+    //create position in area
+    try {
+        await Role.updateOne({_id: idType, "area._id": idArea}, {$push: {"area.$.position": req.body}});
+        const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
+        res.status(200).json({ error: null, message: 'Rol actualizado con exito', roles });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al actualizar rol' });
+    }
+}     
+export const createAccessAreaInRole = async (req, res) => { console.log(req.body); console.log("llegooooooo");
+    const { idType, idArea } = req.params;
+    //create position in area
+    try {
+        await Role.updateOne({_id: idType, "area._id": idArea}, {$push: {"area.$.access": req.body}});
+        const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
+        res.status(200).json({ error: null, message: 'Rol actualizado con exito', roles });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al actualizar rol' });
+    }
+}     
+   
+export const UpdateareaInRole = async (req, res) => {
+    const { _id } = req.params;
+    try {
+        //update area in role
+        const role = await Role.findOneAndUpdate({_id: _id, "area._id": req.body.area._id}, {$set: {"area.$": req.body.area}}, { new: true });
+        res.status(200).json({ error: null, message: 'Rol actualizado con exito', role });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al actualizar rol' });
+    }
+}
