@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { users, addUserData, putUserData} from "../../controllers/users/userController.js";
-import { roleAll, roleAdd, roleUpdate, roleDelete, createAreaInRole, UpdateareaInRole, createPositionAreaInRole, createAccessAreaInRole} from "../../controllers/users/userController.js";
+import { roleAll, roleAdd, roleUpdate, roleDelete, createAreaInRole, UpdateareaInRole, createPositionAreaInRole, createAccessAreaInRole, createRouteAccessAreaInRole} from "../../controllers/users/userController.js";
 const router = Router();
 
 router.get("/", users);
@@ -16,5 +16,7 @@ router.put("/role-area/:_id", UpdateareaInRole);
 //load two params
 router.post("/role-area-position/:idType/:idArea", createPositionAreaInRole);
 router.post("/role-area-access/:idType/:idArea", createAccessAreaInRole);
+router.post("/role-area-access-route/:idType/:idArea/:idAccess", createRouteAccessAreaInRole);
+
 
 export default router;
