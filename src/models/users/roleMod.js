@@ -55,14 +55,14 @@ const roleSchema = new Schema({
             description: {
                 type: String,
             },
-            links: [{
+            routes: [{
                 name: {
                     type: String,
                 },
-                description: {
+                route: {
                     type: String,
                 },
-                route: {
+                description: {
                     type: String,
                 },
             }],

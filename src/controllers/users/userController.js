@@ -121,14 +121,18 @@ export const createAccessAreaInRole = async (req, res) => { console.log(req.body
 }
 
 export const createRouteAccessAreaInRole = async (req, res) => {
-    console.log(req.body); console.log(req.params);
+    console.log("req.body");
+    console.log(req.body);
+    console.log(req.params);
     const { idType, idArea, idAccess } = req.params;
-    //create position in area
     try {
-        await Role.updateOne({_id: idType, "area._id": idArea, "area.access._id": idAccess}, {$push: {"area.$.access.$.route": req.body}});
+        // update in role -> area -> access -> routes
+        //"area.$[_id: idArea].access.$[_id: idAccess].routes"
+        await Role.updateOne({_id: idType, "area._id": idArea}, {$push: {"area.$.access.$[element].routes": req.body}}, {arrayFilters: [{"element._id": idAccess}]});
         const roles = await Role.find({}, {_id: 1, type: 1, area: 1});
         res.status(200).json({ error: null, message: 'Rol actualizado con exito', roles });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error, message: 'Error al actualizar rol' });
     }
 }

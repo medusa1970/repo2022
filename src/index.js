@@ -18,8 +18,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/point', pointRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/points', pointRoutes);
 
 
 app.use(history())
