@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const roleUserSchema = new Schema({
-    // objetid of the user
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -12,19 +11,14 @@ const roleUserSchema = new Schema({
     idPoint: {type: String },
     idArea: {type: String },
     idPosition: {type: String },
-    access: [{
-        idAccess: {type: String },
-        routes: [{
-            idRoute: {type: String },
-        }],
-    }],
+    access: {type: Array },
+    routes: {type: Array },
 }, {
     timestamps: true,
     versionKey: false
 });
 
-export default mongoose.model('Role', roleUserSchema);
-
+export default mongoose.model('RoleUser', roleUserSchema);
 
 
 /* import mongoose from 'mongoose';

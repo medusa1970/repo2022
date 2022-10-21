@@ -5,18 +5,22 @@ import nodemailer from 'nodemailer';
 
 export const verify_signin = async (req) => {
     const { username, password } = req.body;
-    const user = await User.findOne({$or: [{email: username}, {username: username}]}, {_id: 1, type:1, username: 1, password: 1});
-    if (!user) { 
-        return { message: 'Usuario no encontrado' };
+    try {
+        const user = await User.findOne({$or: [{email: username}, {username: username}]}, {_id: 1, type:1, username: 1, password: 1});
+        if (!user) {
+            return {user: undefined, message: 'Usuario no encontrado'};
+        }
+        const match = await bcryptjs.compare(password, user.password);
+        if (!match) {
+            return {user: undefined, message: 'Contraseña incorrecta'};
+        }
+        return {user, message: 'Usuario encontrado'};
+    } catch (error) {
+        return {user: undefined, message: 'No se pudo procesar. ERROR'};
     }
-    const isMatch = await bcryptjs.compare(password, user.password);
-    if (!isMatch) {
-        return { message: 'Contraseña incorrecta' };
-    }
-    return { user, message: 'Usuario verificado' };
 }
 
-export const generateTokens = async (userId, username) => {
+export const generateTokens = async (userId) => {
     try {
         const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
         const refreshtoken = jwt.sign({ userId }, process.env.REFRESH_JWT_SECRET, { expiresIn: '4h' });

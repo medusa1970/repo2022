@@ -1,5 +1,6 @@
 import User from '../../models/users/userModel.js';
 import Role from '../../models/users/roleMod.js';
+import RoleUser from '../../models/users/roleUserMod.js';
 import Point from '../../models/points/pointModel.js';
 import bcryptjs from 'bcryptjs';
 
@@ -15,9 +16,10 @@ export const users = async (req, res) => {
     }
 }
 
-export const addUserData = async (req, res) => {
+export const addUserData = async (req, res) => { console.log('addUserData');
     try {
         const user = new User(req.body);
+        console.log(user);
         const salt = await bcryptjs.genSalt(10);
         user.password = await bcryptjs.hash(user.password, salt);
         await user.save();
@@ -108,7 +110,7 @@ export const createPositionAreaInRole = async (req, res) => {
         res.status(500).json({ error: error, message: 'Error al actualizar rol' });
     }
 }     
-export const createAccessAreaInRole = async (req, res) => { console.log(req.body); console.log("llegooooooo");
+export const createAccessAreaInRole = async (req, res) => { console.log(req.body);
     const { idType, idArea } = req.params;
     //create position in area
     try {
@@ -146,5 +148,27 @@ export const UpdateareaInRole = async (req, res) => {
         res.status(200).json({ error: null, message: 'Rol actualizado con exito', role });
     } catch (error) {
         res.status(500).json({ error: error, message: 'Error al actualizar rol' });
+    }
+}
+
+export const roleUserAdd = async (req, res) => {
+    const { _id } = req.params;
+    const { idType, idPoint, idArea, idPosition, access } = req.body;
+    try {
+        //add new role in RoleUser
+        const roleUser = new RoleUser({user: _id, idType});
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al agregar rol' });
+    }
+}
+
+export const roleUserGet = async (req, res) => {
+    const { _id } = req.params;
+    try {
+        //get roles in user
+        const user = await User.findById(_id);
+        res.status(200).json({ error: null, message: 'Roles obtenidos con exito', user });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Error al obtener roles' });
     }
 }

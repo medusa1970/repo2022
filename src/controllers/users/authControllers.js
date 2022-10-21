@@ -3,7 +3,7 @@ import { verify_signin, generateTokens, generateCode, sendEmail, refreshTokens }
 import jwt from 'jsonwebtoken';
 import bcryptjs from "bcryptjs";
 
-export const signup = async (req, res) => {
+export const signup = async (req, res) => { console.log('signup'); res.json({message: 'signup'}); 
     const { first_name, last_name, doc_id, phone, address, email, username, password } = req.body;
     try {
         const user = new User({ first_name, last_name, doc_id, phone, address, email, username, password });
@@ -24,7 +24,7 @@ export const signin = async (req, res) => {
         return res.status(500).json({ error: 500, message: data.error });
     }
     const {token, refreshtoken, error} = data;
-    res.status(200).json({ token, refreshtoken, username:user.username, type: user.type, error });
+    res.status(200).json({ token, refreshtoken, username: user.username, error });
 }
 
 export const refresh = async (req, res) => {
