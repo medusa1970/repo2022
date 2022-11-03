@@ -21,7 +21,7 @@ router.post("/role-area-access/:idType/:idArea", createAccessAreaInRole);
 router.post("/role-area-access-route/:idType/:idArea/:idAccess", createRouteAccessAreaInRole);
 
 // rutas para roles de usuarios
-router.post("/role-user", roleUserAdd);
+router.post("/role-user/:_id", roleUserAdd);
 router.get("/role-user/:_id", roleUserGet);
 
 export default router;

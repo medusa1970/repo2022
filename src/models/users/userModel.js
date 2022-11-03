@@ -59,13 +59,7 @@ const userSchema = new Schema({
         enum: ['active', 'inactive', 'pending', 'blocked', 'deleted'],
         default: 'pending'
     },
-/*     type: {
-        type: String,
-        required: true,
-        enum: ['user', 'point', 'production', 'admin'],
-        default: 'user'
-    }
- */}, {
+    }, {
     timestamps: true,
     versionKey: false
 });

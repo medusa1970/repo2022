@@ -3,6 +3,8 @@ import Role from '../../models/users/roleMod.js';
 import RoleUser from '../../models/users/roleUserMod.js';
 import Point from '../../models/points/pointModel.js';
 import bcryptjs from 'bcryptjs';
+import { verify_username_password } from '../../helpers/users/usersHelpers.js';
+
 
 
 export const users = async (req, res) => {
@@ -16,14 +18,16 @@ export const users = async (req, res) => {
     }
 }
 
-export const addUserData = async (req, res) => { console.log('addUserData');
+export const addUserData = async (req, res) => { console.log(req.body);
     try {
         const user = new User(req.body);
-        console.log(user);
         const salt = await bcryptjs.genSalt(10);
         user.password = await bcryptjs.hash(user.password, salt);
-        await user.save();
-        res.status(200).json({ error: null, message: 'Usuario creado con exito', user });  
+        const newUser = await user.save();
+        const id = newUser._id;
+        // retorno users nuevamente para actualizar la tabla
+        const users = await User.find({state: {$ne: "deleted"}}, {_id: 1, first_name:1, last_name:1, doc_id:1, phone:1, address:1, username: 1, email:1, type: 1, state: 1});
+        res.status(200).json({ error: null, message: 'Usuario creado con exito', users, id });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error, message: 'Error al crear usuario' });
@@ -65,7 +69,7 @@ export const roleAll = async (req, res) => {
     }
 }
 
-export const roleUpdate = async (req, res) => { console.log(req.body);
+export const roleUpdate = async (req, res) => {
     const { _id } = req.params;
     try {
         //add new area in role
@@ -152,23 +156,40 @@ export const UpdateareaInRole = async (req, res) => {
 }
 
 export const roleUserAdd = async (req, res) => {
-    const { _id } = req.params;
-    const { idType, idPoint, idArea, idPosition, access } = req.body;
-    try {
-        //add new role in RoleUser
-        const roleUser = new RoleUser({user: _id, idType});
-    } catch (error) {
-        res.status(500).json({ error: error, message: 'Error al agregar rol' });
+    req.body.rolesNew._id= req.params._id;
+    const { rolesNew, username, password } = req.body;
+    rolesNew._id= req.params._id;
+    const verify = await verify_username_password(username, password);
+    if(verify){
+        const existsRoleUser = await RoleUser.findOne({_id: rolesNew._id});
+        if(existsRoleUser){
+            const roleUser = await RoleUser.findByIdAndUpdate(rolesNew._id, rolesNew, { new: true });
+            res.status(200).json({ error: null, message: 'ROLES actualizados correctamente', roleUser });
+        }else{
+            try { // save req.body in roleUser
+                const roleUser = new RoleUser(rolesNew);
+                await roleUser.save();
+                res.status(200).json({ error: null, message: 'ROLES asignados correctamente', roleUser });
+            } catch (error) {
+                res.json({ error: error, message: 'ERROR al asignar ROLES' });
+            }    
+        }    
+    }else{
+        res.json({ error: 500, message: 'Usuario sin autorización para cambiar ROLES' });
     }
 }
 
 export const roleUserGet = async (req, res) => {
     const { _id } = req.params;
     try {
-        //get roles in user
-        const user = await User.findById(_id);
-        res.status(200).json({ error: null, message: 'Roles obtenidos con exito', user });
+        const rolesUser = await RoleUser.findById({_id}, {_id: 1, type: 1, point: 1, area: 1, position: 1, access: 1, routes: 1});
+        if(rolesUser===null){
+            const data = {_id: _id, type: "", point: "", area: "", position: "", access: [], routes: []};
+            res.status(200).json({ error: null, message: 'Se obtuvo los roles del usuario',  "rolesUser": data });
+        }else{
+            res.status(200).json({ error: null, message: 'Se obtuvo los roles del usuario',  rolesUser });
+        }
     } catch (error) {
-        res.status(500).json({ error: error, message: 'Error al obtener roles' });
+        res.status(500).json({ error: error, message: 'Error al obtener los roles de usuario' });
     }
 }
